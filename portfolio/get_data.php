@@ -1,8 +1,8 @@
 <?php
 // PHPエラーを画面に表示（開発時のみ出すときは消すかコメントアウト）
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 // データベース接続情報
 $servername = "localhost";
@@ -31,7 +31,7 @@ try {
 
 try {
     // 最新10件の温度データを取得するSQL文
-    // ORDER BY created_at DESC で新しい順に並べ、LIMIT 10 で10件に制限
+    // ORDER BY created_at ASC で新しい順に並べ、LIMIT 10 で10件に制限
     //ascで昇順に表示(新しい順)
     // 修正後: descで古い順に10件取得
 $query = "SELECT temp, device_id, created_at FROM temperatures ORDER BY created_at DESC LIMIT 10";
@@ -53,3 +53,4 @@ $stmt = null;
 $pdo = null;
 
 ?>
+
