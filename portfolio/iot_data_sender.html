@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoTデータ送信シミュレーター</title>
+    <!-- 外部CSSファイルを読み込む -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>IoTデータ送信シミュレーター</h1>
+
+    <div>
+        <label for="temperature">温度 (°C):</label>
+        <input type="number" id="temperature" name="temperature" step="0.1" value="25.0">
+    </div>
+
+    <div>
+        <label for="deviceId">デバイスID:</label>
+        <input type="number" id="deviceId" name="device_id" value="1">
+        <p class="text-xs text-gray-500 mt-1">※ データベースの`devices`テーブルに登録済みのIDを入力してください (例: 1, 2, 3)</p>
+    </div>
+
+    <input type="button" id="sendDataBtn" value="データ送信">
+
+    <div id="responseMessage" class="message hidden">
+        <!-- サーバーからの応答メッセージが表示されます -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sendDataBtn = document.getElementById('sendDataBtn');
+            const temperatureInput = document.getElementById('temperature');
+            const deviceIdInput = document.getElementById('deviceId');
+            const responseMessageDiv = document.getElementById('responseMessage');
+
+            sendDataBtn.addEventListener('click', async () => {
+                const temperature = temperatureInput.value;
+                const deviceId = deviceIdInput.value;
+
+                // 入力値の簡易バリデーション
+                if (!temperature || !deviceId) {
+                    displayMessage('エラー: 温度とデバイスIDを入力してください。', 'error');
+                    return;
+                }
+
+                // サーバーに送信するデータ
+                const formData = new URLSearchParams();
+                formData.append('temperature', temperature);
+                formData.append('device_id', deviceId);
+
+                try {
+                    // PHPスクリプトのURL (XAMPPのhtdocs内のパスに合わせてください)
+                    const phpScriptUrl = 'http://localhost/portfolio/insert_temperature.php'; // 例: iot_portfolioフォルダに保存した場合
+
+                    const response = await fetch(phpScriptUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        // HTTPエラーレスポンス（4xx, 5xx）の場合
+                        throw new Error(`HTTPエラー: ${response.status}`);
+                    }
+
+                    const resultText = await response.text();
+                    displayMessage(`サーバー応答: ${resultText}`, 'success');
+
+                } catch (error) {
+                    console.error('データ送信エラー:', error);
+                    displayMessage(`データ送信失敗: ${error.message}`, 'error');
+                }
+            });
+
+            // メッセージ表示関数
+            function displayMessage(message, type) {
+                responseMessageDiv.textContent = message;
+                responseMessageDiv.classList.remove('hidden', 'success', 'error'); // 既存のクラスをリセット
+                responseMessageDiv.classList.add(type); // 新しいタイプ（'success'または'error'）を追加
+                responseMessageDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
