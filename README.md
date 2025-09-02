@@ -1,4 +1,4 @@
 # portfolio-TemperatureGraph
 javaとPHPとjavascriptを使って「データ自動生成→DB登録→データをグラフでリアルタイム表示」する  
-//"%.1f": これは「書式指定子」
+データ送信するときの"%.1f"などの書式指定子、JAVAのHTTP通信、特にPOSTリクエストなどでデータ送信を行う際に使用するOutputStreamクラスを学べた
 
